@@ -1,28 +1,90 @@
-#
-# def f(a, b=[]):
-#     print(b)
-#     a.append(2)
-#     b.append(2)
-#     print('inter', a)
-#     print('inter', b)
-#
-# a = [1]
-# b = [1]
-# f(a)
-# print(a)
-# f(a)
-# print(a)
-#
-# f(a, b)
-#
-# f(a)
-# print(a)
-#
-# print(a)
+import sys
 
 
+def singleton(func):
+    pass
 
 
-def func(a, b, c, d, e):
-    print(a, b, c, d, e)
-func(1, *[1,2], **{"d":1, 'e': 2})
+#
+# class Singleton(type):
+#     pass
+
+#
+# class Singleton(object):
+#     def __new__(cls, *args, **kw):
+#         if not hasattr(cls, '_instance'):
+#             orig = super(Singleton, cls)
+#             cls._instance = orig.__new__(cls, *args, **kw)
+#         return cls._instance
+#
+#
+# print(Singleton())
+# #
+# class Interpreter:
+#     _instance = None
+#     #
+#     # def __init__(self, x):
+#     #     super().__init__()
+#     #     self.val = x
+#     #     print(self.val)
+#
+#     def __new__(cls, *args, **kwargs):
+#         if cls._instance is None:
+#             ori
+#             cls._instance = .__new__(cls, *args, **kwargs)
+#         return cls._instance
+
+
+# a = Interpreter(1)
+# print(a.val)
+# b = Interpreter(2)
+# print(b.val)
+# print(a == b)
+
+#
+# def get_parameter(*args, **kwargs):  # 工厂函数，用来接受@get_parameter('index.html/')的'index.html/'
+#     print(args, kwargs)
+#     def log_time(func):
+#         def make_decorater():
+#             print(args, kwargs)
+#             print('现在开始装饰')
+#             func()
+#             print('现在结束装饰')
+#
+#         return make_decorater
+#
+#     return log_time
+#
+#
+# @get_parameter('index.html/')
+# def test():
+#     print('我是被装饰的函数')
+#     # return num+1
+#
+#
+# test()  # test()=make_decorater()
+
+
+def out(x):
+    def inter(y):
+        return x * y
+    return inter
+
+
+fancs = []
+for i in range(5):
+    f = out(i)
+    print(id(f))
+    fancs.append(f)
+
+for f in fancs:
+    print(f(2))
+
+
+flist = []
+for i in range(5):
+    def foo(x): print(x+i)
+    print(id(foo))
+    flist.append(foo)
+for f in flist:
+    f(2)
