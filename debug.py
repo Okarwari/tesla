@@ -65,26 +65,3 @@ def singleton(func):
 # test()  # test()=make_decorater()
 
 
-def out(x):
-    def inter(y):
-        return x * y
-    return inter
-
-
-fancs = []
-for i in range(5):
-    f = out(i)
-    print(id(f))
-    fancs.append(f)
-
-for f in fancs:
-    print(f(2))
-
-
-flist = []
-for i in range(5):
-    def foo(x): print(x+i)
-    print(id(foo))
-    flist.append(foo)
-for f in flist:
-    f(2)

@@ -113,14 +113,23 @@ func(2)
 # print(func(2))
 print(sys.getrefcount('123123123'))
 print(sys.getrefcount('sdfsdfsdfdsfdsfdsfdsf'))
-
 ``` 
->2. 
-```python
 
+>2. 如果外部引用变量为可变对象（set、list)则可以被改变。
+```python
+def func(l):
+    def inter(x):
+        l.append(x)
+        print(l)
+    return inter
+
+l = []
+inter = func(l)
+inter(1)
+inter(2)
+print(l)
 ```
 
->3. 
 
 闭包的作用
 >作用1. 当闭包执行完后，仍然能够保持住当前的运行环境。原因是外部引用变量没有回收，使用可变对象时，可以使用被引用变量保存当时的状态。
@@ -166,4 +175,38 @@ def make_filter(keep):
 filter = make_filter("pass")  
 filter_result = filter("result.txt")
 ```
+##4. Late Binding
+看看这个两个例子
+```python
+flist = []
+for j in range(5):
+    def foo(x): print(x+j)
+    print(foo)
+    flist.append(foo)
+for f in flist:
+    f(2)
+```
+
+```python
+def out(x):
+    def inter(y):
+        print('x_id', id(x))
+        return x * y
+    return inter
+
+fancs = []
+for i in range(5):
+    f = out(i)
+    print(id(f))
+    fancs.append(f)
+
+for f in fancs:
+    print(f(2))
+```
+由于python的变量只在调用时才会去查找对应的变量值。因此第一个例子在调用的时候，i的值已经变成了4，因此将输入6 6 6 6 6
+但是第二个例子，由于i将他的引用值传递给了x。 此时每个函数的x的值分别为0， 1， 2， 3， 4.
+此时各个函数查找x时，则会输出0, 2 ,4, 6, 8。
+这是正确答案，所以在内部函数引用外部变量时，请尽量不要使用全局变量
+
+
 ##4. Python单例模式
