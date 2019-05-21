@@ -195,7 +195,7 @@ def out(x):
     return inter
 
 fancs = []
-for i in range(5):
+fo****r i in range(5):
     f = out(i)
     print(id(f))
     fancs.append(f)
@@ -209,4 +209,23 @@ for f in fancs:
 这是正确答案，所以在内部函数引用外部变量时，请尽量不要使用全局变量
 
 
-##4. Python单例模式
+##5. Python单例模式
+
+
+##6. Python C3算法
+C3算法用于Python3的类继承
+
+#### **为什么采用C3算法**
+C3算法最早被提出是用于Lisp的，应用在Python中是为了解决原来基于深度优先搜索算法不满足本地优先级，和单调性的问题。
+
+#### C3算法
+
+公式：`mro(B) = [B] + merge(mro(A1), mro(A2), mro(A3) ..., [A1,A2,A3])`
+
+遍历执行merge操作的序列，如果一个序列的第一个元素，在其他序列中也是第一个元素，或不在其他序列出现，
+则从所有执行merge操作序列中删除这个元素，合并到当前的mro中。
+
+merge操作后的序列，继续执行merge操作，直到merge操作的序列为空。如果merge操作的序列无法为空，
+则说明不合法。
+
+[参考:Python的多重继承问题-MRO和C3算法](https://www.jianshu.com/p/a08c61abe895)

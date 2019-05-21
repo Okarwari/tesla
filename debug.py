@@ -1,22 +1,6 @@
 import sys
 
 
-def singleton(func):
-    pass
-
-
-#
-# class Singleton(type):
-#     pass
-
-#
-# class Singleton(object):
-#     def __new__(cls, *args, **kw):
-#         if not hasattr(cls, '_instance'):
-#             orig = super(Singleton, cls)
-#             cls._instance = orig.__new__(cls, *args, **kw)
-#         return cls._instance
-#
 #
 # print(Singleton())
 # #
@@ -65,3 +49,30 @@ def singleton(func):
 # test()  # test()=make_decorater()
 
 
+# class Person:
+#     _state = {}
+#     def __init__(self):
+#
+#
+class Singleton(object):
+    def __new__(cls, *args, **kw):
+        if not hasattr(cls, '_instance'):
+            cls._instance = super(Singleton, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self, x):
+        self.x = x
+
+a = Singleton(2)
+b = Singleton(3)
+print(id(a))
+print(id(b))
+print(a.x, b.x)
+
+class My_Singleton(object):
+    def foo(self):
+        pass
+
+print('*****')
+
+my_singleton = My_Singleton()
