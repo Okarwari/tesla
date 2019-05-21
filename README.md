@@ -6,3 +6,4 @@
 * [1 Python of Basic](tesla/Python%20of%20Basic.md)
 * [2 Http Control](tesla/Http%20Control.md)
 * [3 Design Patterns](tesla/Design%20Patterns.md)
+* [4 Code Analysis of Python](tesla/Code%20Analysis%20of%20Python.md)
