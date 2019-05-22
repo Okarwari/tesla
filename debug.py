@@ -54,25 +54,17 @@ import sys
 #     def __init__(self):
 #
 #
-class Singleton(object):
-    def __new__(cls, *args, **kw):
-        if not hasattr(cls, '_instance'):
-            cls._instance = super(Singleton, cls).__new__(cls)
-        return cls._instance
 
-    def __init__(self, x):
-        self.x = x
+def log(log_field):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            func()
+            print(log_field)
+        return wrapper
+    return decorator  # log() 调用后返回decorator
 
-a = Singleton(2)
-b = Singleton(3)
-print(id(a))
-print(id(b))
-print(a.x, b.x)
 
-class My_Singleton(object):
-    def foo(self):
-        pass
-
-print('*****')
-
-my_singleton = My_Singleton()
+@log(log_field='name')  # 等价于  func = log(log_field='name')(func) => decorator(func)
+def func():
+    print('func')
+func()

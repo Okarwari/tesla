@@ -5,7 +5,7 @@
 
 参考：[Python 2.7.x 与 Python 3.x 的主要差异](http://chenqx.github.io/2014/11/10/Key-differences-between-Python-2-7-x-and-Python-3-x/)
 
-## 2. python函数传参以及变量传递
+## 2. Python函数传参以及变量传递
 
 1. python的参数传递可以分为顺序传参和关键字传参，通过*args, **kwargs可以将接受任意多的参数
 
@@ -62,10 +62,7 @@ print(a)
 print(a)
 ```
 
-##3. python装饰器
-
-
-##4. 闭包
+## 3. 闭包
 
 举个栗子
 ```python
@@ -175,7 +172,7 @@ def make_filter(keep):
 filter = make_filter("pass")  
 filter_result = filter("result.txt")
 ```
-##4. Late Binding
+## 4. Late Binding
 看看这个两个例子
 ```python
 flist = []
@@ -208,11 +205,50 @@ for f in fancs:
 此时各个函数查找x时，则会输出0, 2 ,4, 6, 8。
 这是正确答案，所以在内部函数引用外部变量时，请尽量不要使用全局变量
 
+## 5. python装饰器
+装饰器其实是一个典型的闭包，主要功能是原函数添加新的功能
+举个例子
 
-##5. Python单例模式
+```
+def add_time(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        func()
+        end_time = time.time()
+        print(end_time-start_time)
+    return wrapper
+
+@add_time
+def func():
+    print('func')
+
+func()
+```
+
+如果要为装饰器添加参数
+```python
+def log(log_field):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            func()
+            print(log_field)
+        return wrapper
+    return decorator  # log() 调用后返回decorator
 
 
-##6. Python C3算法
+@log(log_field='name')  # 等价于  func = log(log_field='name')(func) => decorator(func)
+def func():
+    print('func')
+func()
+```
+
+
+
+##6. Python单例模式
+
+ [设计模式之单例模式](../tesla/Design%20Patterns.md#1.单例模式)
+
+##7. Python C3算法
 C3算法用于Python3的类继承
 
 #### **为什么采用C3算法**
