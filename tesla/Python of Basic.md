@@ -1,11 +1,22 @@
 # Python语言特性
 
-## 1. Python2和3的区别
+**Table of Contents**
+
+   * [Python语言特性](#Python语言特性)
+      * [1 Python2和3的区别](#1-Python2和3的区别)  
+      * [2 Python函数传参以及变量传递](#2-Python函数传参以及变量传递)  
+      * [3 闭包](#3-闭包)  
+      * [4 Late Binding](#4-Late Binding)  
+      * [5 python装饰器](#5-python装饰器)  
+      * [6 Python单例模式](#6 Python单例模式)  
+      * [7 Python C3算法](#7 Python C3算法)  
+      
+## 1 Python2和3的区别
 ### 1.1 Python2编码问题
 
 参考：[Python 2.7.x 与 Python 3.x 的主要差异](http://chenqx.github.io/2014/11/10/Key-differences-between-Python-2-7-x-and-Python-3-x/)
 
-## 2. Python函数传参以及变量传递
+## 2 Python函数传参以及变量传递
 
 1. python的参数传递可以分为顺序传参和关键字传参，通过*args, **kwargs可以将接受任意多的参数
 
@@ -62,7 +73,7 @@ print(a)
 print(a)
 ```
 
-## 3. 闭包
+## 3 闭包
 
 举个栗子
 ```python
@@ -82,7 +93,7 @@ print(func(2))
 2. 内嵌函数必须引用外部函数中的变量
 3. 外部函数的返回值必须是内嵌函数
 
-对于测试后，我认为闭包的具有以下性质
+经过测试后，我认为闭包的具有以下性质
 >1. 未被内部函数应用的变量将会被gc回收
 ```python
 import sys
@@ -172,7 +183,7 @@ def make_filter(keep):
 filter = make_filter("pass")  
 filter_result = filter("result.txt")
 ```
-## 4. Late Binding
+## 4 Late Binding
 看看这个两个例子
 ```python
 flist = []
@@ -205,7 +216,7 @@ for f in fancs:
 此时各个函数查找x时，则会输出0, 2 ,4, 6, 8。
 这是正确答案，所以在内部函数引用外部变量时，请尽量不要使用全局变量
 
-## 5. python装饰器
+## 5 python装饰器
 装饰器其实是一个典型的闭包，主要功能是原函数添加新的功能
 举个例子
 
@@ -244,11 +255,11 @@ func()
 
 
 
-##6. Python单例模式
+## 6 Python单例模式
 
  [设计模式之单例模式](../tesla/Design%20Patterns.md#1.单例模式)
 
-##7. Python C3算法
+## 7 Python C3算法
 C3算法用于Python3的类继承
 
 #### **为什么采用C3算法**
