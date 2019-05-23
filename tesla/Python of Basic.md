@@ -7,9 +7,10 @@
       * [2 Python函数传参以及变量传递](#2-Python函数传参以及变量传递)  
       * [3 闭包](#3-闭包)  
       * [4 Late Binding](#4-Late Binding)  
-      * [5 python装饰器](#5-python装饰器)  
-      * [6 Python单例模式](#6 Python单例模式)  
-      * [7 Python C3算法](#7 Python C3算法)  
+      * [5 Python装饰器](#5-python装饰器)  
+      * [6 Python单例模式](#6-Python单例模式)  
+      * [7 Python面向对象](#7-Python面向对象)
+         * [1 Python C3算法](#1-Python C3算法)
       
 ## 1 Python2和3的区别
 ### 1.1 Python2编码问题
@@ -259,10 +260,11 @@ func()
 
  [设计模式之单例模式](../tesla/Design%20Patterns.md#1.单例模式)
 
-## 7 Python C3算法
+## 7 Python面向对象
+### 1 Python C3算法
 C3算法用于Python3的类继承
 
-#### **为什么采用C3算法**
+#### 为什么采用C3算法
 C3算法最早被提出是用于Lisp的，应用在Python中是为了解决原来基于深度优先搜索算法不满足本地优先级，和单调性的问题。
 
 #### C3算法
@@ -276,3 +278,27 @@ merge操作后的序列，继续执行merge操作，直到merge操作的序列�
 则说明不合法。
 
 [参考:Python的多重继承问题-MRO和C3算法](https://www.jianshu.com/p/a08c61abe895)
+
+### 2 类变量和实例变量
+
+在类里面的所有属性都可以通过对象访问，换句话说，类变量可以被对象获取。即对象也可以通过getattr获取类变量的值
+
+```python
+class Person:
+    country = None
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def say(self):
+        print("hello world")
+
+
+p = Person('stack', 12)
+print(Person.__dict__)
+print(p.__dict__)
+print(hasattr(Person, 'say'))
+print(hasattr(p, 'country'))
+
+```
