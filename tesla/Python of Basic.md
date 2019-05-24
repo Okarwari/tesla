@@ -11,7 +11,7 @@
       * [6 Python单例模式](#6-Python单例模式)  
       * [7 Python面向对象](#7-Python面向对象)
          * [1 Python C3算法](#1-Python C3算法)
-      
+      * [8 生成器、迭代器、可迭代对象](#8-生成器、迭代器、可迭代对象)
 ## 1 Python2和3的区别
 ### 1.1 Python2编码问题
 
@@ -302,3 +302,62 @@ print(hasattr(Person, 'say'))
 print(hasattr(p, 'country'))
 
 ```
+
+## 8 生成器、迭代器、可迭代对象
+#### 生成器
+
+生成器指向的并不是一系列数据，而是生成一系列数据的算法
+
+#### 可迭代对象
+凡是实现了__iter__方法的对象都是可迭代对象
+
+
+#### 迭代器
+
+凡是实现了__next__和__iter__方法的都是迭代器,可迭代对象使用iter()方法可以生成迭代器
+生成器既是迭代器又是可迭代对象
+
+```python
+from collections import Iterator, Iterable
+
+class LinkIter():
+    def __init__(self, lst, index=0):
+        self.lst = lst
+        self.index = index
+
+    def __next__(self):
+        try:
+            value = self.lst[self.index]
+            self.index += 1
+        except:
+            raise StopIteration
+        return value
+
+
+class Link():
+    def __init__(self, lst, index=0):
+        self.lst = lst
+        self.index = index
+
+    def __iter__(self):
+        return LinkIter(self.lst, self.index)
+
+for i in Link([1,2,3,4,5]):
+    print(i)
+
+it = iter(Link([1,2,3,4,5]))
+
+print(it, type(it))
+
+print(hasattr(it, '__iter__'))
+
+#print(iter(iter(Link([1,2,3,4,5]))))
+
+print(isinstance(it, Iterator))
+print(isinstance(Link([1,2,3,4,5]), Iterable))
+
+```
+这段代码是我想判断是否迭代器一定就是可迭代对象。其实，官方约定迭代器协议是实现__iter__和__next__方法
+所以这段代码其实是误导，只是我觉得规则是死的人是活的。
+不过这段代码若是这样执行是会出错的
+`print(iter(iter(Link([1,2,3,4,5]))))`
