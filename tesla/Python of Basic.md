@@ -1,8 +1,8 @@
 # Python语言特性
-
 **Table of Contents**
-
-   * [Python语言特性](#Python语言特性)
+    
+   * [Python效率总结]()
+   * [Python基础](#Python基础)
       * [1 Python2和3的区别](#1-Python2和3的区别)  
       * [2 Python函数传参以及变量传递](#2-Python函数传参以及变量传递)  
       * [3 闭包](#3-闭包)  
@@ -12,6 +12,28 @@
       * [7 Python面向对象](#7-Python面向对象)
          * [1 Python C3算法](#1-Python C3算法)
       * [8 生成器、迭代器、可迭代对象](#8-生成器、迭代器、可迭代对象)
+
+## Python效率总结
+1. extend比append要快
+
+```python
+import time
+gen = [0 for i in range(90000000)]
+pen = [0 for v in range(90000000)]
+t1 = time.time()
+num = []
+for i in gen:
+    num.append(i)
+t2 = time.time()
+print(t2-t1)
+new_num = []
+new_num.extend(pen)
+t3 = time.time()
+
+print(t3-t2)
+```
+
+## Python基础
 ## 1 Python2和3的区别
 ### 1.1 Python2编码问题
 
