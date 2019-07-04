@@ -27,3 +27,32 @@ class Person:
 
 Person().read(Book())
 Person().read('sdfsdf')
+
+
+
+import time
+
+
+
+def retry(times=3, second=1): # 重试时间为一秒，重试次数为3次
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                i = 0
+                result = func(*args, **kwargs)
+                while not result and i < times:
+                    time.sleep(second)
+                    i += 1
+                    result = func(*args, **kwargs)
+            except:
+                pass
+            return result
+        return wrapper
+    return decorator
+
+
+@retry(times=5)
+def func():
+    print('run failed')
+    return False
+func()
