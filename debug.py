@@ -27,3 +27,8 @@ class Person:
 
 Person().read(Book())
 Person().read('sdfsdf')
+
+
+[1,2,4,3]
+
+
