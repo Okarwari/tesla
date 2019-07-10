@@ -16,31 +16,42 @@
 ### 推荐书籍
 OSTEP(Operating System Three Easy Picies)
 Unix/Linux编程实践教程(Understanding UNIX/LINUX Programming)
-
+程序员的自我修养-链接、装载和库
 ### 趣谈操作系统中的外包对应名词
 * 项目运行体系 -- 祖宗进程
 * 会议室 -- 内存
 * 会议室管理系统 -- 内存管理系统
 * 项目执计划书 -- 代码段
 * 会议记录 -- 数据段
-* 
+* 办事大厅 -- 系统调用
     
 
 
 
 ### 从入门到放弃-- Linux六大山坡
-#### 第一个坡： 抛弃旧的思维习惯， 熟练使用Linux命令行
-    鸟哥的Linux私房菜
-    LInux系统管理技术手册
-#### 第二个坡：通过系统调用或者 glibc，学会自己进行程序设计
-    UNIX环境高级编程
+- 第一个坡： 抛弃旧的思维习惯， 熟练使用Linux命令行
+    - 鸟哥的Linux私房菜
+    - LInux系统管理技术手册
+- 第二个坡：通过系统调用或者 glibc，学会自己进行程序设计
+    - UNIX环境高级编程
+    
+- 第三个坡：了解Linux内核机制， 反复研习重点突破
+    - 深入理解Linux内核
 
-#### 
+- 第四个坡：阅读Linux内核源码， 聚焦核心逻辑和场景
+    - 一开始阅读代码不要纠结一城一池的得失,不要每一行都一定要搞清楚它
+        是干嘛的,而要聚焦核心逻辑和使用场景
+    - Linux内核源代码情景分析
+
+- 第五个坡：实验定制化Linux组件， 已经没有人阻挡你成为内核开发工程师了
+- 最后一坡：面向真实场景的开发， 实践没有终点
+
+
 
 
 
 ### 1 基本Linux命令
-![](https://static001.geekbang.org/resource/image/88/e5/8855bb645d8ecc35c80aa89cde5d16e5.jpg)
+![](../assets/images/Linux基本命令.jpg)
 
 
 ###  2 部分系统调用
@@ -135,6 +146,8 @@ unistd_64.h
 
 
 ### 3 X86体系架构
+#### CPU的具体构成和执行过程
+![](../assets/images/X86体系结构硬件.jpeg)
 - CPU 包括: 运算单元, 数据单元, 控制单元
     - 运算单元 不知道算哪些数据, 结果放哪
     - 数据单元 包括 CPU 内部缓存和寄存器, 暂时存放数据和结果
@@ -144,21 +157,138 @@ unistd_64.h
         - 指令包括操作和目标数据
     - 数据单元 根据控制单元的指令, 从数据段读数据到数据寄存器中
     - 运算单元 开始计算, 结果暂时存放到数据寄存器
-- 两个寄存器, 存当前进程代码段和数据段起始地址, 在进程间切换
+- 两个寄存器, CS存当前进程代码段和DS存数据段起始地址，保存那个进程地址，则cpu执行那个进程指令, 在进程间切换
 - 总线包含两类数据: 地址总线和数据总线
 ---
-- x86 开放, 统一, 兼容
-- 数据单元 包含 8个 16位通用寄存器, 可分为 2个 8位使用
+
+#### x86 开放, 统一, 兼容 
+##### 8086处理器
+![](../assets/images/8086处理器内部组成.jpeg)
+- 数据单元 包含 8个 16位通用寄存器(AX、BX、CX、DX、SP、BP、SI、DI)，
+AX、BX、CX、DX可分为 2个 8位使用,H 就是 High（高位），L 就是 Low（低位）
 - 控制单元 包含 IP(指令指针寄存器) 以及 4个段寄存器 CS DS SS ES
+    - CS 代码段寄存器，存放代码段的起始地址，通过它找到代码在内存中的位置
+    - DS 数据段寄存器，存放数据段的起始地址，通过它找到数据在内存中的位置
+    - SS 栈寄存器
     - IP 存放指令偏移量
     - 数据偏移量存放在通用寄存器中
-    - `段地址<<4 + 偏移量` 得到地址
+    - 地址获取： `段初始地址<<4 + 偏移量` 
+ 
 ---
-- 32 位处理器
-- 通用寄存器 从 8个 16位拓展为 8个 32位, 保留 16位和 8位使用方式
+##### 32 位处理器
+![](../assets/images/32处理器内部组成.jpeg)
+- 通用寄存器 从 8个 16位拓展为 8个 32位, 保留 16位和 8位使用方式，名字稍有改动
 - IP 从 16位扩展为 32位, 保持兼容
-- 段寄存器仍为 16位, 由段描述符(表格, 缓存到 CPU 中)存储段的起始地址, 由段寄存器选择其中一项
+- 段寄存器仍为16位, 不再保存段起始地址，由段描述符(表格在内存, 缓存到 CPU 中)存储段的起始地址, 
+    由段寄存器保存的是对应段在段描述符表格中的哪一项。
     - 保证段地址灵活性与兼容性
 ---
 - 16位为实模式, 32位为保护模式
 - 刚开机为实模式, 需要更多内存切换到保护模式
+
+#### x86总结
+![](../assets/images/x86结构组成总结图.jpeg)
+
+
+### BIOS到bootloader，系统加载
+- 实模式只有 1MB 内存寻址空间(X86)
+- 加电, 重置 CS 为 0xFFFF , IP 为 0x0000, 对应 BIOS 程序
+- 0xF0000-0xFFFFF 映射到 BIOS 程序(存储在ROM中), BIOS 做以下三件事:
+    - 检查硬件
+    - 提供基本输入(中断)输出(显存映射)服务
+    - 加载 MBR 到内存(0x7c00)
+- MRB: 启动盘第一个扇区(512B, 由 Grub2 写入 boot.img 镜像)
+- boot.img 加载 Grub2 的 core.img 镜像
+- core.img 包括 diskroot.img, lzma_decompress.img, kernel.img 以及其他模块
+- boot.img 先加载运行 diskroot.img, 再由 diskroot.img 加载 core.img 的其他内容
+- diskroot.img 解压运行 lzma_compress.img, 由lzma_compress.img 切换到保护模式
+
+-----------
+
+- 切换到保护模式需要做以下三件事:
+    - 启用分段, 辅助进程管理
+    - 启动分页, 辅助内存管理
+    - 打开其他地址线
+- lzma_compress.img 解压运行 grub 内核 kernel.img, kernel.img 做以下四件事:
+    - 解析 grub.conf 文件
+    - 选择操作系统
+    - 例如选择 linux16, 会先读取内核头部数据进行检查, 检查通过后加载完整系统内核
+    - 启动系统内核
+    
+![](../assets/images/BIOS引导.jpeg)
+
+
+### 内核初始化
+- 内核初始化, 运行 `start_kernel()` 函数(位于 init/main.c), 初始化做三件事
+    - 创建样板进程, 及各个模块初始化
+    - 创建管理/创建用户态进程的进程
+    - 创建管理/创建内核态进程的进程
+---
+- 创建样板进程,及各个模块初始化
+    - 创建第一个进程, 0号进程. `set_task_stack_end_magic(&init_task)` and `struct task_struct init_task = INIT_TASK(init_task)`
+    - 初始化中断, `trap_init()`. 系统调用也是通过发送中断进行, 由 `set_system_intr_gate()` 完成.
+    - 初始化内存管理模块, `mm_init()`
+    - 初始化进程调度模块, `sched_init()`
+    - 初始化基于内存的文件系统 rootfs, `vfs_caches_init()`
+        - VFS(虚拟文件系统)将各种文件系统抽象成统一接口
+    - 调用 `rest_init()` 完成其他初始化工作
+---
+- 创建管理/创建用户态进程的进程, 1号进程
+    - `rest_init()` 通过 `kernel_thread(kernel_init,...)` 创建 1号进程(工作在用户态).
+    - 权限管理
+        - x86 提供 4个 Ring 分层权限
+        - 操作系统利用: Ring0-内核态(访问核心资源); Ring3-用户态(普通程序)
+    - 用户态调用系统调用: 用户态-系统调用-保存寄存器-内核态执行系统调用-恢复寄存器-返回用户态
+    - 新进程执行 kernel_init 函数, 先运行 ramdisk 的 /init 程序(位于内存中)
+        - 首先加载 ELF 文件
+        - 设置用于保存用户态寄存器的结构体
+        - 返回进入用户态
+        - /init 加载存储设备的驱动
+     - kernel_init 函数启动存储设备文件系统上的 init
+---
+- 创建管理/创建内核态进程的进程, 2号进程
+    - `rest_init()` 通过 `kernel_thread(kthreadd,...)` 创建 2号进程(工作在内核态).
+    - `kthreadd` 负责所有内核态线程的调度和管理
+    
+### Linux系统调用的原理
+- glibc 将系统调用封装成更友好的接口
+- 本节解析 glibc 函数如何调用到内核的 open
+---
+- 用户进程调用 open 函数
+    - glibc 的 syscal.list 列出 glibc 函数对应的系统调用
+    - glibc 的脚本 make_syscall.sh 根据 syscal.list 生成对应的宏定义(函数映射到系统调用)
+    - glibc 的 syscal-template.S 使用这些宏, 定义了系统调用的调用方式(也是通过宏)
+    - 其中会调用 DO_CALL (也是一个宏), 32位与 64位实现不同
+---
+- 32位 DO_CALL (位于 i386 目录下 sysdep.h)
+    - 将调用参数放入寄存器中, 由系统调用名得到系统调用号, 放入 eax
+    - 执行 ENTER_KERNEL(一个宏), 对应 int $0x80 触发软中断, 进入内核
+    - 调用软中断处理函数 entry_INT80_32(内核启动时, 由 trap_init() 配置)
+    - entry_INT80_32 将用户态寄存器存入 pt_regs 中(保存现场以及系统调用参数), 调用 do_syscall_32_iraq_on 
+    - do_syscall_32_iraq_on 从 pt_regs 中取系统调用号(eax), 从系统调用表得到对应实现函数, 取 pt_regs 中存储的参数, 调用系统调用
+    - entry_INT80_32 调用 INTERRUPT_RUTURN(一个宏)对应 iret 指令, 系统调用结果存在 pt_regs 的 eax 位置, 根据 pt_regs 恢复用户态进程
+![](../assets/images/32位系统调用执行过程.jpg)
+---
+- 64位 DO_CALL (位于 x86_64 目录下 sysdep.h)
+    - 通过系统调用名得到系统调用号, 存入 rax; 不同中断, 执行 syscall 指令
+    - MSR(特殊模块寄存器), 辅助完成某些功能(包括系统调用)
+    - trap_init() 会调用 cpu_init->syscall_init 设置该寄存器
+    - syscall 从 MSR 寄存器中, 拿出函数地址进行调用, 即调用 entry_SYSCALL_64
+    - entry_SYSCALL_64 先保存用户态寄存器到 pt_regs 中
+    - 调用 entry_SYSCALL64_slow_pat->do_syscall_64
+    - do_syscall_64 从 rax 取系统调用号, 从系统调用表得到对应实现函数, 取 pt_regs 中存储的参数, 调用系统调用
+    - 返回执行 USERGS_SYSRET64(一个宏), 对应执行 swapgs 和 sysretq 指令; 系统调用结果存在 pt_regs 的 ax 位置, 根据 pt_regs 恢复用户态进程
+![](../assets/images/64位系统调用执行过程.jpg)
+---
+- 系统调用表 sys_call_table
+    - 32位 定义在 arch/x86/entry/syscalls/syscall_32.tbl 
+    - 64位 定义在 arch/x86/entry/syscalls/syscall_64.tbl
+    - syscall_*.tbl 内容包括: 系统调用号, 系统调用名, 内核实现函数名(以 sys 开头)
+    - 内核实现函数的声明: include/linux/syscall.h
+    - 内核实现函数的实现: 某个 .c 文件, 例如 sys_open 的实现在 fs/open.c
+        - .c 文件中, 以宏的方式替代函数名, 用多层宏构建函数头
+    - 编译过程中, 通过 syscall_*.tbl 生成 unistd_*.h 文件
+        - unistd_*.h 包含系统调用与实现函数的对应关系
+    - syscall_*.h include 了 unistd_*.h 头文件, 并定义了系统调用表(数组)
+- 64位系统完整调用执行过程
+![](../assets/images/64位完整的系统调用执行过程.jpg)
