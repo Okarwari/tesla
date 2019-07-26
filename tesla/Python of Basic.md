@@ -276,6 +276,32 @@ def func():
 func()
 ```
 
+类装饰器
+```python
+class Count(object):
+    def __init__(self, func):
+        self.func = func
+        self.count = 0
+
+    def __call__(self, *args, **kwargs):
+        self.count += 1
+        print(self.count)
+        self.func()
+
+@Count
+def func():
+    print('hello world')
+
+
+func()
+func()
+
+```
+
+其实所谓装饰器都是通过函数的特性衍生出来的，因为函数可以被当成变量传递，才会有装饰器、闭包等产生。
+所谓装饰器语法都绕不过`@decorator -> func = decorator(func)`这个公式，
+类装饰器也是一样，@Count -> func = Count(func) 
+将实例化一个Count对象，func被当成对象的属性，调用func等于调用__call__方法
 
 
 ## 6 Python单例模式
@@ -383,3 +409,81 @@ print(isinstance(Link([1,2,3,4,5]), Iterable))
 所以这段代码其实是误导，只是我觉得规则是死的人是活的。
 不过这段代码若是这样执行是会出错的
 `print(iter(iter(Link([1,2,3,4,5]))))`
+
+## Python的lru_cache 最近最久使用缓存
+Python的Lru_chahe用了一个循环引用的方式，做了一个循环链表，链表的每个节点指向的是一个列表，有一个引用root。
+存储着每个节点的前驱和后继、每个节点的KEY、value.并生成一个缓存字典，key是KEY。链表有最大值。
+程序的逻辑：
+- 当待缓存值小于最大值时，将生成的新的节点插入在root的后面。代表这是最近出现的，将最后被销毁，然后返回结果。
+- 当缓存中有这次KEY。将找到列表的前驱和后继。删除这个节点，将其插入到root的后面，返回结果。
+- 当缓存未没有这次KEY, 将root赋值给oldroot，并将KEY和Result赋值给old_root，将root.next作为新的root,
+这样old_root代表root的前驱，时最新出现的节点。并从cache中删除root.next总的KEY，代表这次KEY已经很久没有使用了。
+![](../assets/images/Untitled%20Diagram.png)
+
+
+# Python的Del
+python的del关键字并不是删除某个数据、而是删除引用数据的变量，当数据（对象）的引用置为0时，
+变量就会被GC回收
+```python
+l = [1, 2, 3]
+
+a = {1: l}
+
+del a[1]
+
+print(l)
+
+ll = l
+
+del l
+
+print(ll)
+
+print(a)
+
+print('-----')
+
+l = [1,2,3]
+del[l[1]]
+
+print(l)
+
+```
+
+
+## Python的引用和C的指针
+
+对于C来说，一个指针p存储了一个地址，这个地址对应内存的一块区域，指针能够改变这块地址的值
+即能够直接操控内存的某块区域的值的变化。
+而Python的赋值是将在内存某块地址的值（假设为1），用一个变量a去绑定他，对于a变量的更改（a=2)，
+即是将a变量从1这里解绑，重新绑定2.
+我对Python的引用推测如下（可能有误，以后会从源码找答案）
+>a变量存储某个地址，这个地址是内存的某块区域，这块区域存储的值在a变量赋值(a='1')时开辟'1'。
+当a变量重新赋值(a='2')时，会重新开辟一个对象'2'.而变量a的值由'1'的地址，转变成'2'的地址。
+
+对上面的推测，我一个有一个疑问，所以不敢确定推测的合理性
+按照我的推测，a存储的是1的地址, 那么print(id(a))的值时，打印的是1的地址，为什么不打印a的地址。
+a的地址又是什么，这让我对a是否拥有自己的空间有所怀疑，常理来说a这个变量肯定是需要存储的，
+可能的推测之一是a和代码一块存储在指令区把。
+
+
+所以他们的区别，一个是改变自己（Python变量）的值（换一个引用对象），
+一个是改变指向的地址（C指针）的值（将地址的值改变）
+
+希望这段代码能够稍微证实一下我的推断，a确实在内存一个地方存着，存着一个跟1有关的东西，这个东西叫引用。等我啃源码！！！
+```python
+l = [1,2,3]
+
+print(id(1))
+print(id(l[0]))
+print(id(l))
+```
+
+我曾一直将Python的变量当成一个void型指针，其实他和指针的特性还是有些区别。
+
+
+
+
+## Python性能调优
+[Python性能优化的几种方式](https://blog.csdn.net/u010159842/article/details/54573102)
+
